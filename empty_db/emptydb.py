@@ -96,7 +96,7 @@ def main(argv):
     driver = None
     pass_length = None
     try:
-        opts, args = getopt.getopt(argv, 'hu:p:U:P:H:d:l:d:',
+        opts, args = getopt.getopt(argv, 'hu:p:U:P:H:d:l:D:',
                                    ['db_user=', 'db_pass=', 'root_user=', 'root_pass=', 'host=', 'driver=', 'length=',
                                     'db_name='])
     except getopt.GetoptError as e:
@@ -111,7 +111,8 @@ def main(argv):
                 "-U or --root_user Database server root user \n "
                 "-P or --root_pass Database root password \n -H or --host Database host address \n "
                 "-d or --driver Server host, mysql as default \n "
-                "-l or --length Database user password length, 8 char as default")
+                "-l or --length Database user password length, 8 char as default \n"
+                "-D or --db_name for Database name, random string as default")
             sys.exit(0)
         if opt in ('-u', '--db_user'):
             db_user = arg
@@ -127,7 +128,7 @@ def main(argv):
             driver = arg
         if opt in ('-l', '--length'):
             pass_length = arg
-        if opt in ('-d', '--db_name'):
+        if opt in ('-D', '--db_name'):
             dbname = arg
 
     app = EmptyDb(db_driver=driver, db_host=host, r_user=root_user, r_pass=root_pass, db_user_name=db_user,

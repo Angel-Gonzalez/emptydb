@@ -3,7 +3,7 @@ import string
 import subprocess
 import random
 import sys
-import getopt
+from optparse import OptionParser, OptParseError
 
 
 class EmptyDb(object):
@@ -86,53 +86,33 @@ class EmptyDb(object):
                 print("error: " + error + " " + str(output))
 
 
-def main(argv):
-    db_user = None
-    db_pass = None
-    dbname = None
-    root_user = None
-    root_pass = None
-    host = None
-    driver = None
-    pass_length = None
+def main():
+    parser = OptionParser("usage: %prog [options] arg", description="Create an empty data base")
+    parser.add_option("-u", "--db_user", action="store", type="string",
+                      help="Database user name, random string as default")
+    parser.add_option("-p", "--db_pass", action="store", type="string",
+                      help="Database user password, random string as default")
+    parser.add_option("-U", "--root_user", action="store", type="string",
+                      help="Database server root user name")
+    parser.add_option("-P", "--root_pass", action="store", type="string",
+                      help="Database server user password, if none input will ask")
+    parser.add_option("-H", "--host", action="store", type="string",
+                      help="Database host url")
+    parser.add_option("-d", "--driver", action="store", type="string",
+                      help="Database driver, mysql string as default")
+    parser.add_option("-l", "--length", action="store", type="string",
+                      help="Database user name and pass, random string length when default")
+    parser.add_option("-D", "--db_name", action="store", type="string",
+                      help="Database name, random string as default")
     try:
-        opts, args = getopt.getopt(argv, 'hu:p:U:P:H:d:l:D:',
-                                   ['db_user=', 'db_pass=', 'root_user=', 'root_pass=', 'host=', 'driver=', 'length=',
-                                    'db_name='])
-    except getopt.GetoptError as e:
+        opts, args = parser.parse_args()
+    except OptParseError as e:
         print(e)
         sys.exit(2)
-    for opt, arg in opts:
-        if opt == '-h':
-            print(
-                "EmptyDB Creates an empty Database with given params \n "
-                "-u or --db_user Database user name, random string as default \n "
-                "-p or --db_pass Database user pass, random string as default \n "
-                "-U or --root_user Database server root user \n "
-                "-P or --root_pass Database root password \n -H or --host Database host address \n "
-                "-d or --driver Server host, mysql as default \n "
-                "-l or --length Database user password length, 8 char as default \n"
-                "-D or --db_name for Database name, random string as default")
-            sys.exit(0)
-        if opt in ('-u', '--db_user'):
-            db_user = arg
-        if opt in ('-p', '--db_pass'):
-            db_pass = arg
-        if opt in ('-U', '--root_user'):
-            root_user = arg
-        if opt in ('-P', '--root_pass'):
-            root_pass = arg
-        if opt in ('-H', '--host'):
-            host = arg
-        if opt in ('-d', '--driver'):
-            driver = arg
-        if opt in ('-l', '--length'):
-            pass_length = arg
-        if opt in ('-D', '--db_name'):
-            dbname = arg
 
-    app = EmptyDb(db_driver=driver, db_host=host, r_user=root_user, r_pass=root_pass, db_user_name=db_user,
-                  db_user_pass=db_pass, pass_len=pass_length, db_name=dbname)
+    app = EmptyDb(db_driver=opts.driver, db_host=opts.host, r_user=opts.root_user, r_pass=opts.root_pass,
+                  db_user_name=opts.db_user,
+                  db_user_pass=opts.db_pass, pass_len=opts.length, db_name=opts.db_name)
     print("EmptyDB will create an empty database with params set by user")
     if app.password is None:
         app.password = getpass.getpass('Database server password:')
@@ -144,4 +124,4 @@ def main(argv):
 
 
 if __name__ == '__main__':
-    main(sys.argv[1:])
+    main()
